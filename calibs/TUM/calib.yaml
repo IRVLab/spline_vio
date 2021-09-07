@@ -1,0 +1,35 @@
+# transformation of the main camera in IMU frame
+T_imu:
+  cols: 4
+  rows: 4
+  data: [-0.99952504, 0.00750192, -0.02989013, 0.04557484,
+         0.02961534, -0.03439736, -0.99896935, -0.0711618,
+         -0.00852233, -0.99938008, 0.03415885, -0.04468125,
+         0.0, 0.0, 0.0, 1.0]
+
+rate_hz: 200
+
+# Values from allan plots
+# sequence: dataset-calib-imu-static2.bag (full data range)
+#accelerometer_noise_density: 0.0014     # m/s^1.5
+#accelerometer_random_walk:   0.000086   # m/s^2.5
+#gyroscope_noise_density:     0.000080   # rad/s^0.5
+#gyroscope_random_walk:       0.0000022  # rad/s^1.5
+
+# Inflated values (to account for unmodelled effects)
+# Those values work well with Kalibr cam-imu calibration.
+#  - white noise multiplied by 2
+#  - bias random walk multiplied by 10
+accelerometer_noise_density: 0.0028     # m/s^1.5
+accelerometer_random_walk:   0.00086    # m/s^2.5
+gyroscope_noise_density:     0.00016    # rad/s^0.5
+gyroscope_random_walk:       0.000022   # rad/s^1.5
+
+# transformation of the main camera in the other camera frame
+T_stereo:
+  cols: 4
+  rows: 4
+  data: [0.99999945, -0.00082336, -0.00065614, -0.1010611,
+         0.00079169, 0.99889946, -0.04689604, -0.00197646,
+         0.00069403, 0.04689549, 0.99889956, -0.00117564,
+         0.0, 0.0, 0.0, 1.0]

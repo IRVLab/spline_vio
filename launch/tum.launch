@@ -1,0 +1,24 @@
+<launch>
+  <arg name="start_frame" default="0"/>
+  <arg name="bag" default=""/>
+  <arg name="results" default="$(env HOME)/Desktop/results.txt"/>
+
+  <!-- <arg name="bag" default="$(env HOME)/Workspace/data/TUM/r1.bag"/>
+  <arg name="results" default="$(env HOME)/Workspace/spline_vio_tests/results/SplineVIO/r1.txt"/> -->
+
+  <rosparam command="load" file="$(find spline_vio)/calibs/TUM/calib.yaml" ns="spline_vio"/>
+
+  <node name="spline_vio" pkg="spline_vio" type="spline_vio_node" output="screen" required="true">
+    <param name="imu_topic" value="/imu0" />
+    <param name="cam_topic" value="/cam0/image_raw" />
+    <param name="calib" value="$(find spline_vio)/calibs/TUM/camera0.txt" />
+    <param name="mode" value="0" />
+    <param name="vignette" value="$(find spline_vio)/calibs/TUM/vignette0.png" />
+    <param name="gamma" value="$(find spline_vio)/calibs/TUM/pcalib0.txt" />
+    <param name="bag" value="$(arg bag)" />
+    <param name="start_frame" value="$(arg start_frame)" />
+    <param name="results" value="$(arg results)" />
+    <!-- <param name="nogui" value="true" /> -->
+    <param name="weight_imu_dso" value="0.1" />
+  </node>
+  </launch>

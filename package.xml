@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>spline_vio</name>
+  <version>0.0.0</version>
+  <description>The spline_vio package</description>
+
+  <maintainer email="moxxx066@umn.edu">Jiawei Mo</maintainer>
+
+
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <export>
+
+  </export>
+</package>
