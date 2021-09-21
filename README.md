@@ -2,7 +2,7 @@
 
 ## Related Publications
 - **Direct Sparse Odometry**, J. Engel, V. Koltun, D. Cremers, In IEEE Transactions on Pattern Analysis and Machine Intelligence (PAMI), 2018
-- **Continuous-Time Spline Visual-Inertial Odometry**, J. Mo and J. Sattar, under review
+- **Continuous-Time Spline Visual-Inertial Odometry**, J. Mo and J. Sattar, under review, [arXiv](https://arxiv.org/abs/2109.09035).
 
 ## Dependencies
 - [ROS](https://www.ros.org/)
