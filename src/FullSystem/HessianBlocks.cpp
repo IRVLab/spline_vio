@@ -216,8 +216,8 @@ void FrameHessian::getImuHi(CalibHessian *HCalib, double tt, Mat36 &JsTW,
     double sr, cr, sp, cp;
     HCalib->getGSinCos(sr, cr, sp, cp, true);
     Eigen::Matrix<double, 3, 2> J_rp;
-    J_rp.col(0) << -sp * sr, -cr, -cp * sr;
-    J_rp.col(1) << cp * cr, 0, -sp * cr;
+    J_rp.col(0) << sp * sr, cr, cp * sr;
+    J_rp.col(1) << -cp * cr, 0, sp * cr;
     J_rp *= setting_g_norm;
     Js.block<3, 2>(0, 1) = SCALE_G * rot_i_w * J_rp;
 

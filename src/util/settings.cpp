@@ -185,7 +185,7 @@ bool setting_enable_imu = true;
 bool setting_print_imu = true;
 
 int setting_min_g_imu = 40;         // minimal # of imu data for gravity est.
-double setting_g_norm = -9.80665;   // gravity norm
+double setting_g_norm = 9.80665;    // gravity norm
 float setting_maxImuInterval = 0.5; // max time interval (seconds) for spline
 double setting_scale_trap_thres = 1e-4; // variance to trap scale
 

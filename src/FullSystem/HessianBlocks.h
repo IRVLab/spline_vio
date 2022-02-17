@@ -561,7 +561,7 @@ struct CalibHessian {
     double sr, cr, sp, cp;
     getGSinCos(sr, cr, sp, cp, use_state_zero);
     Vec3 G;
-    G << sp * cr, -sr, cp * cr;
+    G << -sp * cr, sr, -cp * cr;
     return setting_g_norm * G;
   }
 
