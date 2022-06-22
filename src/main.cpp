@@ -307,6 +307,8 @@ int main(int argc, char **argv) {
   Mat44 tfm_imu_cam;
   cv::cv2eigen(tfm_imu_cv, tfm_imu_cam);
   setting_rot_imu_cam = tfm_imu_cam.topLeftCorner<3, 3>();
+  setting_pos_cam_imu =
+      -setting_rot_imu_cam.transpose() * tfm_imu_cam.topRightCorner<3, 1>();
 
   setting_weight_imu = Mat66::Identity();
   setting_weight_imu.topLeftCorner<3, 3>() /=

@@ -159,6 +159,7 @@ extern double setting_g_norm;
 extern double setting_scale_trap_thres;
 
 extern Mat33 setting_rot_imu_cam;
+extern Vec3 setting_pos_cam_imu ;
 extern double setting_weight_imu_dso;
 extern Mat66 setting_weight_imu;
 extern Mat66 setting_weight_imu_bias;

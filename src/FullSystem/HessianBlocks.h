@@ -385,7 +385,7 @@ struct FrameHessian {
     return spline_l_rot + (2 * t * spline_q + 3 * t * t * spline_c).tail(3);
   }
 
-  inline Vec3 getSplineTw_c2t(double t) const {
+  inline Vec3 getSplineTw_i2t(double t) const {
     double t2 = t * t;
     return t * shell->velInWorld + (t2 * spline_q + t * t2 * spline_c).head(3);
   }

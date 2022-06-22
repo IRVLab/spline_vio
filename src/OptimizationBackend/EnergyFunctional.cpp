@@ -352,18 +352,38 @@ void EnergyFunctional::getImuHessianCurrentFrame(int fi, CalibHessian *HCalib,
           (-tnf < setting_maxImuInterval)) {
         int nxt_idx = CPARS + 3 + 29 * (fi + 1);
         double tnf2 = tnf * tnf;
-        Vec3 d_vel_dso = (1 / tpf) * (prv_fh->PRE_camToWorld.translation() -
-                                      cur_fh->PRE_camToWorld.translation()) -
-                         (1 / tnf) * (cur_fh->PRE_camToWorld.translation() -
-                                      nxt_fh->PRE_camToWorld.translation());
+        Vec3 d_vel_dso =
+            (1 / tpf) *
+                (prv_fh->PRE_camToWorld.translation() +
+                 prv_fh->PRE_camToWorld.rotationMatrix() * setting_pos_cam_imu -
+                 cur_fh->PRE_camToWorld.translation() -
+                 cur_fh->PRE_camToWorld.rotationMatrix() *
+                     setting_pos_cam_imu) -
+            (1 / tnf) *
+                (cur_fh->PRE_camToWorld.translation() +
+                 cur_fh->PRE_camToWorld.rotationMatrix() * setting_pos_cam_imu -
+                 nxt_fh->PRE_camToWorld.translation() -
+                 nxt_fh->PRE_camToWorld.rotationMatrix() * setting_pos_cam_imu);
         Vec3 d_vel_imu = (tpf * cur_fh->spline_q + tpf2 * cur_fh->spline_c +
                           tnf * nxt_fh->spline_q + 2 * tnf2 * nxt_fh->spline_c)
                              .head(3);
         r_cst.segment<3>(3) = d_vel_imu - d_vel_dso;
         J_cst.block<3, 3>(3, prv_idx) = -SCALE_XI_TRANS / tpf * I33;
+        J_cst.block<3, 3>(3, prv_idx + 3) =
+            SCALE_XI_ROT / tpf *
+            SO3::hat(prv_fh->get_camToWorld_evalPT().rotationMatrix() *
+                     setting_pos_cam_imu);
         J_cst.block<3, 3>(3, cur_idx) =
             SCALE_XI_TRANS * (1 / tpf + 1 / tnf) * I33;
+        J_cst.block<3, 3>(3, cur_idx + 3) =
+            -SCALE_XI_ROT * (1 / tpf + 1 / tnf) *
+            SO3::hat(cur_fh->get_camToWorld_evalPT().rotationMatrix() *
+                     setting_pos_cam_imu);
         J_cst.block<3, 3>(3, nxt_idx) = -SCALE_XI_TRANS / tnf * I33;
+        J_cst.block<3, 3>(3, nxt_idx + 3) =
+            SCALE_XI_ROT / tnf *
+            SO3::hat(nxt_fh->get_camToWorld_evalPT().rotationMatrix() *
+                     setting_pos_cam_imu);
         J_cst.block<3, 3>(3, cur_idx + 17) = SCALE_SQ_TRANS * tpf * I33;
         J_cst.block<3, 3>(3, cur_idx + 23) = SCALE_SC_TRANS * tpf2 * I33;
         J_cst.block<3, 3>(3, nxt_idx + 17) = SCALE_SQ_TRANS * tnf * I33;

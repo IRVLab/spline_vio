@@ -268,6 +268,9 @@ bool FrameHessian::initializeImu(
   // calculate the spline
   Mat33 A = Mat33::Zero();
   Eigen::Matrix<double, 3, 6> b = Eigen::Matrix<double, 3, 6>::Zero();
+  Vec3 base_pos_world_imu =
+      base_frame->shell->camToWorld.translation() +
+      base_frame->shell->camToWorld.rotationMatrix() * setting_pos_cam_imu;
   for (int i = 0; i < 3; i++) {
     FrameHessian *cur_frame = frame_hessians[i + 1];
     A(i, 0) = cur_frame->shell->timestamp - base_frame->shell->timestamp;
@@ -277,8 +280,10 @@ bool FrameHessian::initializeImu(
     b.row(i) =
         (base_frame->shell->camToWorld.inverse() * cur_frame->shell->camToWorld)
             .log();
-    b.row(i).head(3) = cur_frame->shell->camToWorld.translation() -
-                       base_frame->shell->camToWorld.translation();
+    b.row(i).head(3) =
+        cur_frame->shell->camToWorld.translation() +
+        cur_frame->shell->camToWorld.rotationMatrix() * setting_pos_cam_imu -
+        base_pos_world_imu;
   }
   Eigen::Matrix<double, 3, 6> x = A.inverse() * b;
   Vec6 l0 = x.row(0);
@@ -370,7 +375,8 @@ void FrameHessian::propagateImuState(FrameShell *last_shell,
   imu_bias = last_imu_bias;
 
   double imu_ts = last_shell->timestamp;
-  Mat33 imu_rot_w_ti = last_shell->camToWorld.rotationMatrix(); // ToDo
+  Mat33 imu_rot_w_ti =
+      last_shell->camToWorld.rotationMatrix() * setting_rot_imu_cam.transpose();
   MatXX Aa = MatXX::Zero(imu_data.size(), 3);
   MatXX ba = MatXX::Zero(imu_data.size(), 3);
   MatXX Ag = MatXX::Zero(imu_data.size(), 3);
@@ -390,8 +396,7 @@ void FrameHessian::propagateImuState(FrameShell *last_shell,
     // acc
     Aa.row(i) << 0, 2 * HCalib->getScaleScaled(),
         6 * t * HCalib->getScaleScaled();
-    ba.row(i) = imu_rot_w_ti * setting_rot_imu_cam.transpose() * unbias_acc -
-                HCalib->getG();
+    ba.row(i) = imu_rot_w_ti * unbias_acc - HCalib->getG();
     // gyro
     Ag.row(i) << 1, 2 * t, 3 * t * t;
     bg.row(i) = setting_rot_imu_cam.transpose() * unbias_gyro;
@@ -416,7 +421,10 @@ void FrameHessian::propagateImuState(FrameShell *last_shell,
 void FrameHessian::updateVel(FrameShell *last_shell) {
   double t = last_shell->timestamp - shell->timestamp;
   Vec3 tsl_diff =
-      last_shell->camToWorld.translation() - shell->camToWorld.translation();
+      last_shell->camToWorld.translation() +
+      last_shell->camToWorld.rotationMatrix() * setting_pos_cam_imu -
+      (shell->camToWorld.translation() +
+       shell->camToWorld.rotationMatrix() * setting_pos_cam_imu);
   shell->velInWorld =
       tsl_diff / t - t * spline_q.head(3) - t * t * spline_q.head(3);
 }

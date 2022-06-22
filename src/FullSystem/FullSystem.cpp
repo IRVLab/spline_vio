@@ -201,9 +201,11 @@ Vec4 FullSystem::trackNewCoarse(FrameHessian *fh) {
   if (setting_enable_imu && HCalib.imu_initialized) {
     // imu predicted motion
     double t = slast->timestamp - fh->shell->timestamp;
-    Vec3 tsl_fh_2_w = slast->camToWorld.translation() - fh->getSplineTw_c2t(t);
     Mat33 rot_fh_2_w =
         slast->camToWorld.rotationMatrix() * fh->getSplineR_c_t(t).transpose();
+    Vec3 tsl_fh_2_w = slast->camToWorld.translation() +
+                      slast->camToWorld.rotationMatrix() * setting_pos_cam_imu -
+                      rot_fh_2_w * setting_pos_cam_imu - fh->getSplineTw_i2t(t);
     SE3 fh_2_w(rot_fh_2_w, tsl_fh_2_w);
     lastF_2_fh_imu = fh_2_w.inverse() * lastF->shell->camToWorld;
     lastF_2_fh_tries.push_back(lastF_2_fh_imu);

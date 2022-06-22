@@ -1,42 +1,16 @@
-# Continuous-Time Spline Visual-Inertial Odometry
+# Continuous-Time Spline Visual-Inertial Odometry (position spline in IMU frame)
 
-## Related Publications
-- **Direct Sparse Odometry**, J. Engel, V. Koltun, D. Cremers, In IEEE Transactions on Pattern Analysis and Machine Intelligence (PAMI), 2018
-- **Continuous-Time Spline Visual-Inertial Odometry**, J. Mo and J. Sattar, In IEEE International Conference on Robotics and Automation, 2022, [arXiv](https://arxiv.org/abs/2109.09035).
+## Please refer to the [README](https://github.com/IRVLab/spline_vio/blob/main/README.md) in the main branch for installation and usage.
 
-## Dependencies
-- [ROS](https://www.ros.org/)
+## Motivation
+The original method (main branch) models the position spline in the camera frame, which introduces a system error when transforming acceleration prediction (Section II-D, IMU Synthesis) from camera frame (a(t) in w) to IMU frame (a(t) in i): there should be additional terms related to the relative translation between camera and IMU. However, since this relative translation is usually small (e.g., a few centimeters in EuRoC and TUM-VI datasets), we achieved relatively good results even with this suboptimal formulation, because the additional terms are negligible.
 
-- [DSO dependencies](https://github.com/JakobEngel/dso#2-installation) 
+## Improvement
+Model the position spline in the IMU frame to eliminate the system error in the original method, see [Modifications.pdf](https://github.com/IRVLab/spline_vio/blob/position_spine_in_imu_frame/Modifications.pdf) for details. However, this is not the only solution; for example, we can also modify the vision system (DSO) to accommodate poses in IMU frame. We opt for this formulation since it requires minimal code modification.
 
-## Install
-```
-cd catkin_ws/src
-git clone https://github.com/IRVLab/spline_vio.git
-cd ..
-catkin_make
-```
-
-## Usage
-- Use [Kalibr toolbox](https://github.com/ethz-asl/kalibr) to calibrate camera and IMU. 
-
-- Convert camera parameters to [DSO format](https://github.com/JakobEngel/dso#31-dataset-format).
-
-- Create a launch file following the example of [tum.launch](https://github.com/IRVLab/spline_vio/blob/master/launch/tum.launch).
-
-```
-roslaunch spline_vio [YOUR_LAUNCH_FILE]
-```
-
-- Ctrl-C to terminate the program, the final trajectory (results.txt) will be written to ~/Desktop folder by default.
-
-## Output file
-- results.txt: poses of all frames, using the TUM RGB-D / TUM monoVO format ([timestamp x y z qx qy qz qw] of the cameraToWorld transformation).
-
-## Modifications to DSO for this project
-- ROS interface: main.cpp
-- Predict pose using spine for front-end tracking: FullSystem::trackNewCoarse()
-- IMU/Spline state: HessianBlocks.h
-- IMU/Spline Jacobians (check [Jacobians.pdf](https://github.com/IRVLab/spline_vio/blob/main/Jacobians.pdf)): HessianBlocks::getImuHi()
-- Constraints Jacobians (check [Jacobians.pdf](https://github.com/IRVLab/spline_vio/blob/main/Jacobians.pdf)): EnergyFunctional::getImuHessianCurrentFrame()
-- Solve the constraint nonlinear optimization problem: EnergyFunctional::solveSystemF()
+## Results
+No significant improvement on EuRoC and TUM-VI datasets (since the distance between camera and IMU is small, the resulting system error is small):
+| Method    | EuRoC Machine Hall            | EuRoC Vicon Room        | TUM-VI Room                     |
+| --------- | ----------------------------- | ----------------------- | ------------------------------- |
+| Original  | 0.066 0.056 0.142 0.131 0.129 | 0.087 x x	0.103 0.111	x | 0.085 0.186	0.114 0.142	x 0.137 |
+| Modified  | 0.088 0.074 0.148 0.325 0.117 | 0.084	x x 0.062 0.152	x | 0.076 0.141	0.118 0.132	x 0.080 |

@@ -190,6 +190,7 @@ float setting_maxImuInterval = 0.5; // max time interval (seconds) for spline
 double setting_scale_trap_thres = 1e-4; // variance to trap scale
 
 Mat33 setting_rot_imu_cam;
+Vec3 setting_pos_cam_imu;
 double setting_weight_imu_dso; // factor of spline imu vs dso
 Mat66 setting_weight_imu;      // imu weight (cov^{-1})
 Mat66 setting_weight_imu_bias; // imu bias weight (cov^{-1})
