@@ -1,5 +1,8 @@
 # Continuous-Time Spline Visual-Inertial Odometry
 
+## Updates
+- [June 2022]: The position and acceleration formulation is suboptimal. Please checkout the [new branch](https://github.com/IRVLab/spline_vio/tree/position_spine_in_imu_frame) for improved formulation.
+
 ## Related Publications
 - **Direct Sparse Odometry**, J. Engel, V. Koltun, D. Cremers, In IEEE Transactions on Pattern Analysis and Machine Intelligence (PAMI), 2018
 - **Continuous-Time Spline Visual-Inertial Odometry**, J. Mo and J. Sattar, In IEEE International Conference on Robotics and Automation, 2022, [arXiv](https://arxiv.org/abs/2109.09035).
